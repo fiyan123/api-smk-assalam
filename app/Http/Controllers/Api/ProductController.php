@@ -14,9 +14,27 @@ class ProductController extends Controller
     public function index()
     {
         $products = [
-            ['id' => 1, 'name' => 'Product 1', 'price' => 100],
-            ['id' => 2, 'name' => 'Product 2', 'price' => 200],
-            ['id' => 3, 'name' => 'Product 3', 'price' => 300],
+            [
+                'id' => 1,
+                'name' => 'Product 1',
+                'price' => 100,
+                'description' => 'This is product 1 description',
+                'stock' => 50,
+            ],
+            [
+                'id' => 2,
+                'name' => 'Product 2',
+                'price' => 200,
+                'description' => 'This is product 2 description',
+                'stock' => 30,
+            ],
+            [
+                'id' => 3,
+                'name' => 'Product 3',
+                'price' => 300,
+                'description' => 'This is product 3 description',
+                'stock' => 20,
+            ],
         ];
 
         // $products = Product::all();
@@ -24,7 +42,7 @@ class ProductController extends Controller
         return response()->json([
             'status' => 200,
             'success' => true,
-            'message' => 'Products retrieved successfully',
+            'message' => 'Products berhasil diambil',
             'data' => $products,
         ]);
     }
@@ -34,7 +52,27 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'price' => 'required|numeric|min:0',
+            'description' => 'nullable|string',
+            'stock' => 'nullable|integer|min:0',
+        ]);
+
+        $products = new Product();
+        $products->name = $request->name;
+        $products->price = $request->price;
+        $products->description = $request->description;
+        $products->stock = $request->stock ?? 0;
+        $products->save();
+
+        return response()->json([
+            'status' => 201,
+            'success' => true,
+            'message' => 'Product berhasil ditambahkan',
+            'data' => $products,
+        ], 201);
+
     }
 
     /**
@@ -42,7 +80,22 @@ class ProductController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $product = Product::find($id);
+
+        if (!$product) {
+            return response()->json([
+                'status' => 404,
+                'success' => false,
+                'message' => 'Product not found',
+            ], 404);
+        }
+
+        return response()->json([
+            'status' => 200,
+            'success' => true,
+            'message' => 'Product berhasil diambil',
+            'data' => $product,
+        ]);
     }
 
     /**
@@ -50,7 +103,44 @@ class ProductController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $request->validate([
+            'name' => 'sometimes|required|string|max:255',
+            'price' => 'sometimes|required|numeric|min:0',
+            'description' => 'nullable|string',
+            'stock' => 'nullable|integer|min:0',
+        ]);
+
+        $product = Product::find($id);
+
+        if (!$product) {
+            return response()->json([
+                'status' => 404,
+                'success' => false,
+                'message' => 'Product not found',
+            ], 404);
+        }
+
+        if ($request->has('name')) {
+            $product->name = $request->name;
+        }
+        if ($request->has('price')) {
+            $product->price = $request->price;
+        }
+        if ($request->has('description')) {
+            $product->description = $request->description;
+        }
+        if ($request->has('stock')) {
+            $product->stock = $request->stock;
+        }
+
+        $product->save();
+
+        return response()->json([
+            'status' => 200,
+            'success' => true,
+            'message' => 'Product berhasil diupdate',
+            'data' => $product,
+        ]);
     }
 
     /**
@@ -58,6 +148,22 @@ class ProductController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $product = Product::find($id);
+
+        if (!$product) {
+            return response()->json([
+                'status' => 404,
+                'success' => false,
+                'message' => 'Product not found',
+            ], 404);
+        }
+
+        $product->delete();
+
+        return response()->json([
+            'status' => 200,
+            'success' => true,
+            'message' => 'Product berhasil dihapus',
+        ]);
     }
 }
