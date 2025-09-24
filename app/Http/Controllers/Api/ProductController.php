@@ -13,31 +13,7 @@ class ProductController extends Controller
      */
     public function index()
     {
-        $products = [
-            [
-                'id' => 1,
-                'name' => 'Product 1',
-                'price' => 100,
-                'description' => 'This is product 1 description',
-                'stock' => 50,
-            ],
-            [
-                'id' => 2,
-                'name' => 'Product 2',
-                'price' => 200,
-                'description' => 'This is product 2 description',
-                'stock' => 30,
-            ],
-            [
-                'id' => 3,
-                'name' => 'Product 3',
-                'price' => 300,
-                'description' => 'This is product 3 description',
-                'stock' => 20,
-            ],
-        ];
-
-        // $products = Product::all();
+        $products = Product::all();
 
         return response()->json([
             'status' => 200,
